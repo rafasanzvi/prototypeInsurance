@@ -34,10 +34,20 @@ Insurance.prototype.quoteInsurance = function() {
     }
 
     //Read year
-
+    const difference = new Date().getFullYear() - this.year
     //Each year that the difference is greater, the cost is low in 3%
+    cantidad -= ((difference * 3) * cantidad) / 100
 
-    console.log(cantidad)
+    /* If the insurance is basic it multiplies 30% 
+        Id the insurance is complete it multiplies 50%    
+    */
+
+    if(type === "basic") {
+        cantidad *= 1.30
+    } else {
+        cantidad *= 1.50
+    }
+    return cantidad
 }
 
 function userInterface() {}
