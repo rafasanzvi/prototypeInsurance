@@ -7,6 +7,39 @@ function Insurance(marca, año, tipo) {
     this.tipo = tipo
 }
 
+Insurance.prototype.quoteInsurance = function() {
+    /*
+    1 = Americano 1.15
+    2 = Asiático 1.05
+    3 = Europeo 1.35
+    */
+
+    let cantidad
+    const base = 2000
+
+    console.log(this.marca)
+
+    switch(this.marca) {
+        case "1":
+            cantidad = base * 1.15
+            break;
+        case "2":
+            cantidad = base * 1.05
+            break;
+        case "3": 
+            cantidad = base * 1.35
+            break;
+        default:
+            break;
+    }
+
+    //Read year
+
+    //Each year that the difference is greater, the cost is low in 3%
+
+    console.log(cantidad)
+}
+
 function userInterface() {}
 
 userInterface.prototype.fillYear = () => {
@@ -79,7 +112,8 @@ function quoteInsurance(e) {
     UI.showMessage("Calculating...", "correcto")
 
     //To instance the insurance
-
+    const insurance = new Insurance(marca, year, type)
+    insurance.quoteInsurance()
     //Use the prototype to quote
-    
+
 }
