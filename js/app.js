@@ -23,6 +23,30 @@ userInterface.prototype.fillYear = () => {
     }
 }
 
+//Show alerts in screen
+userInterface.prototype.showMessage = (message, type) => {
+    
+    const div = document.createElement("div")
+
+    if(type === "error") {
+        div.classList.add("error")
+    } else {
+        div.classList.add("correcto")
+    }
+
+    div.classList.add("message", "mt-10")
+    div.textContent = message
+
+    //Insert in the HTML
+    const form = document.querySelector("#cotizar-seguro")
+    form.insertBefore(div, document.querySelector("#resultado"))
+
+    //Clean the error message 
+    setTimeout(() => {
+        div.remove()
+    }, 4000)
+}
+
 //Instance of userInterface
 const UI = new userInterface()
 
@@ -46,5 +70,16 @@ function quoteInsurance(e) {
     const year = document.querySelector("#year").value
     //Read the type of insurance
     const type = document.querySelector('input[name="tipo"]:checked').value
-    console.log(type)
+    
+    if(marca === "" || year === "" || type === "") {
+        UI.showMessage("You have to fill all fields", "error")
+        return;
+    } 
+
+    UI.showMessage("Calculating...", "correcto")
+
+    //To instance the insurance
+
+    //Use the prototype to quote
+    
 }
