@@ -90,6 +90,11 @@ userInterface.prototype.showMessage = (message, type) => {
     }, 4000)
 }
 
+UI.prototype.showResult = (insurance, total) => {
+    //Create the result
+    
+}
+
 //Instance of userInterface
 const UI = new userInterface()
 
@@ -123,7 +128,8 @@ function quoteInsurance(e) {
 
     //To instance the insurance
     const insurance = new Insurance(marca, year, type)
-    insurance.quoteInsurance()
+    const total = insurance.quoteInsurance()
+    
     //Use the prototype to quote
-
+    UI.showResult(total, insurance)
 }
