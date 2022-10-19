@@ -7,7 +7,7 @@ function Insurance(marca, año, tipo) {
     this.tipo = tipo
 }
 
-Insurance.prototype.quoteInsurance = function() {
+Insurance.prototype.quoteInsurance = function () {
     /*
     1 = Americano 1.15
     2 = Asiático 1.05
@@ -19,14 +19,14 @@ Insurance.prototype.quoteInsurance = function() {
 
     console.log(this.marca)
 
-    switch(this.marca) {
+    switch (this.marca) {
         case "1":
             cantidad = base * 1.15
             break;
         case "2":
             cantidad = base * 1.05
             break;
-        case "3": 
+        case "3":
             cantidad = base * 1.35
             break;
         default:
@@ -42,7 +42,7 @@ Insurance.prototype.quoteInsurance = function() {
         Id the insurance is complete it multiplies 50%    
     */
 
-    if(type === "basic") {
+    if (type === "basic") {
         cantidad *= 1.30
     } else {
         cantidad *= 1.50
@@ -50,28 +50,14 @@ Insurance.prototype.quoteInsurance = function() {
     return cantidad
 }
 
-function userInterface() {}
-
-userInterface.prototype.fillYear = () => {
-    const maxYear = new Date().getFullYear()
-          minYear = maxYear - 20
-
-    const selectYear = document.querySelector("#year") 
-    
-    for(let i = maxYear; i > minYear; i--) {
-        let option = document.createElement("option")
-        option.value = i
-        option.textContent = i
-        selectYear.appendChild(option)
-    }
-}
+function userInterface() { }
 
 //Show alerts in screen
 userInterface.prototype.showMessage = (message, type) => {
-    
+
     const div = document.createElement("div")
 
-    if(type === "error") {
+    if (type === "error") {
         div.classList.add("error")
     } else {
         div.classList.add("correcto")
@@ -87,22 +73,45 @@ userInterface.prototype.showMessage = (message, type) => {
     //Clean the error message 
     setTimeout(() => {
         div.remove()
-    }, 4000)
+    }, 3000)
 }
 
-UI.prototype.showResult = (insurance, total) => {
+userInterface.prototype.showResult = function (insurance, total) {
     //Create the result
-    
+    const div = document.createElement("div")
+    div.classList.add("mt-10")
+
+    div.innerHTML = `
+    <p class="header">Your evaluation</p>
+    <p class="font-bold">Total: ${total}</p>
+    `
+
+    const resultDiv = document.querySelector("#resultado")
+    resultDiv.appendChild(div)
+}
+
+userInterface.prototype.fillYear = () => {
+    const maxYear = new Date().getFullYear()
+    minYear = maxYear - 20
+
+    const selectYear = document.querySelector("#year")
+
+    for (let i = maxYear; i > minYear; i--) {
+        let option = document.createElement("option")
+        option.value = i
+        option.textContent = i
+        selectYear.appendChild(option)
+    }
 }
 
 //Instance of userInterface
-const UI = new userInterface()
+const ui = new userInterface()
 
 document.addEventListener("DOMContentLoaded", () => {
-    UI.fillYear() //Fill the select with the years
+    ui.fillYear() //Fill the select with the years
 })
 
-eventListeners() 
+eventListeners()
 
 function eventListeners() {
     const form = document.querySelector("#cotizar-seguro")
@@ -118,18 +127,20 @@ function quoteInsurance(e) {
     const year = document.querySelector("#year").value
     //Read the type of insurance
     const type = document.querySelector('input[name="tipo"]:checked').value
-    
-    if(marca === "" || year === "" || type === "") {
-        UI.showMessage("You have to fill all fields", "error")
+
+    if (marca === "" || year === "" || type === "") {
+        ui.showMessage("You have to fill all fields", "error")
         return;
-    } 
-
-    UI.showMessage("Calculating...", "correcto")
-
+    }
+    
+    ui.showMessage("Calculating..!!", "correcto")
+    
     //To instance the insurance
     const insurance = new Insurance(marca, year, type)
+    
     const total = insurance.quoteInsurance()
     
     //Use the prototype to quote
-    UI.showResult(total, insurance)
+    ui.showResult(insurance, total)
+    
 }
