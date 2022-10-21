@@ -7,7 +7,7 @@ function Seguro(marca, year, tipo) {
 }
 
 //Realiza la cotización con los datos 
-Seguro.prototype.cotizarSeguro = function() {
+Seguro.prototype.cotizarSeguro = function () {
     /*
         1 = Americano 1.15
         2 = Asiático 1.05
@@ -33,27 +33,29 @@ Seguro.prototype.cotizarSeguro = function() {
 
     //Leer el año
     const diferenciaAños = new Date().getFullYear() - this.year
-    
+
     //Cada año que la diferencia es mayor, el costo va a reducirse un 3%
-    cantidad -= ((diferenciaAños * 3) * cantidad) / 100 
+    cantidad -= ((diferenciaAños * 3) * cantidad) / 100
 
     /*
     Si el seguro es básico se multiplica por un 30% más
     Si el seguro es completo se multiplica por un 50% más
     */
 
-    if(this.tipo === "basico") {
+    if (this.tipo === "basico") {
         cantidad *= 1.30
     } else {
         cantidad *= 1.50
     }
 
-    return cantidad
+    return cantidad.toFixed(2)
+
+    
 }
 
 //Interfaz de usuario o user interface UI, esta no requiere datos, porque se van a ir generando de acuerdo a lo que vaya sucediendo en la aplicación, por lo tanto este objeto irá vacío, a la hora de instanciarlo no le vamos a pasar nada en el constructor, pero hay que crear el constructor para agregarle prototype
 
-function UI() {}
+function UI() { }
 
 //Llena las opciones de los años
 UI.prototype.llenarOpciones = () => {
@@ -75,7 +77,7 @@ UI.prototype.mostrarMensaje = (mensaje, tipo) => {
 
     const div = document.createElement("div")
 
-    if(tipo === "error") {
+    if (tipo === "error") {
         div.classList.add("error")
     } else {
         div.classList.add("correcto")
@@ -95,16 +97,48 @@ UI.prototype.mostrarMensaje = (mensaje, tipo) => {
 
 UI.prototype.mostrarResultado = (seguro, total) => {
 
+    const { marca, year, tipo } = seguro
+    
+    let textoMarca
+
+    switch(marca) {
+        case "1":
+            textoMarca = "Americano";
+            break;
+        case "2":
+            textoMarca = "Asiatico";
+            break;
+        case "3":
+            textoMarca = "Europeo";   
+            break;
+        default:
+            break;         
+    }
+
+    if (marca === "" || year === "" || tipo === "") {
+        mostrarResultado().style.display = "none"
+    }
+
     //Crear el resultado
     const div = document.createElement("div")
     div.classList.add("mt-10")
 
     div.innerHTML = `
         <p class="header">Tu resumen</p>
-        <p class="font-bold">Total: ${total}</p>
+        <p class="font-bold">Marca: <span class="font-normal"> ${textoMarca}</span></p>
+        <p class="font-bold">Año: <span class="font-normal"> ${year}</span></p>
+        <p class="font-bold">Tipo: <span class="font-normal capitalize"> ${tipo}</span></p>
+        <p class="font-bold">Total: <span class="font-normal"> $ ${total}</span></p>
     `
     const resultadoDiv = document.querySelector("#resultado")
-    resultadoDiv.appendChild(div)
+
+    const spinner = document.querySelector("#cargando")
+    spinner.style.display = "block"
+
+    setTimeout(() => {
+        spinner.style.display = "none" //Se borra el spinner, es mejor la forma de style que la de remove() para evitar errores 
+        resultadoDiv.appendChild(div) //Pero se muestra el resultado
+    }, 3000)
 }
 
 //Instancia UI
@@ -125,18 +159,24 @@ function cotizarSeguro(e) {
     e.preventDefault()
 
     //Leer la marca seleccionada
-    const marca = document.querySelector("#marca").value    
-    
+    const marca = document.querySelector("#marca").value
+
     //Leer el año seleccionado
     const year = document.querySelector("#year").value
-    
+
     //Leer el tipo seleccionado
     const tipo = document.querySelector('input[name ="tipo"]:checked').value
-    
-    if(marca === "" || year === "" || tipo === "") {
+
+    if (marca === "" || year === "" || tipo === "") {
         ui.mostrarMensaje("Debes de rellenar todos los campos", "error")
     } else {
         ui.mostrarMensaje("Cotizando.....", "correcto")
+    }
+
+    //Ocultar las cotizaciones previas
+    const resultados = document.querySelector("#resultado div")
+    if(resultados != null) {
+        resultados.remove()
     }
 
     //Instanciando el seguro
@@ -144,4 +184,6 @@ function cotizarSeguro(e) {
     const total = seguro.cotizarSeguro()
     //Utilizar el prototype que va a cotizar
     ui.mostrarResultado(seguro, total)
+
 }
+
