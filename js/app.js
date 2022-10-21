@@ -1,23 +1,21 @@
+//Constructores
 
-//Constructors
-
-function Insurance(marca, año, tipo) {
+function Seguro(marca, year, tipo) {
     this.marca = marca
-    this.año = año
+    this.year = year
     this.tipo = tipo
 }
 
-Insurance.prototype.quoteInsurance = function () {
+//Realiza la cotización con los datos 
+Seguro.prototype.cotizarSeguro = function() {
     /*
-    1 = Americano 1.15
-    2 = Asiático 1.05
-    3 = Europeo 1.35
+        1 = Americano 1.15
+        2 = Asiático 1.05
+        3 = Europeo 1.35
     */
 
     let cantidad
     const base = 2000
-
-    console.log(this.marca)
 
     switch (this.marca) {
         case "1":
@@ -33,70 +31,38 @@ Insurance.prototype.quoteInsurance = function () {
             break;
     }
 
-    //Read year
-    const difference = new Date().getFullYear() - this.year
-    //Each year that the difference is greater, the cost is low in 3%
-    cantidad -= ((difference * 3) * cantidad) / 100
+    //Leer el año
+    const diferenciaAños = new Date().getFullYear() - this.year
+    
+    //Cada año que la diferencia es mayor, el costo va a reducirse un 3%
+    cantidad -= ((diferenciaAños * 3) * cantidad) / 100 
 
-    /* If the insurance is basic it multiplies 30% 
-        Id the insurance is complete it multiplies 50%    
+    /*
+    Si el seguro es básico se multiplica por un 30% más
+    Si el seguro es completo se multiplica por un 50% más
     */
 
-    if (type === "basic") {
+    if(this.tipo === "basico") {
         cantidad *= 1.30
     } else {
         cantidad *= 1.50
     }
+
     return cantidad
 }
 
-function userInterface() { }
+//Interfaz de usuario o user interface UI, esta no requiere datos, porque se van a ir generando de acuerdo a lo que vaya sucediendo en la aplicación, por lo tanto este objeto irá vacío, a la hora de instanciarlo no le vamos a pasar nada en el constructor, pero hay que crear el constructor para agregarle prototype
 
-//Show alerts in screen
-userInterface.prototype.showMessage = (message, type) => {
+function UI() {}
 
-    const div = document.createElement("div")
-
-    if (type === "error") {
-        div.classList.add("error")
-    } else {
-        div.classList.add("correcto")
-    }
-
-    div.classList.add("message", "mt-10")
-    div.textContent = message
-
-    //Insert in the HTML
-    const form = document.querySelector("#cotizar-seguro")
-    form.insertBefore(div, document.querySelector("#resultado"))
-
-    //Clean the error message 
-    setTimeout(() => {
-        div.remove()
-    }, 3000)
-}
-
-userInterface.prototype.showResult = function (insurance, total) {
-    //Create the result
-    const div = document.createElement("div")
-    div.classList.add("mt-10")
-
-    div.innerHTML = `
-    <p class="header">Your evaluation</p>
-    <p class="font-bold">Total: ${total}</p>
-    `
-
-    const resultDiv = document.querySelector("#resultado")
-    resultDiv.appendChild(div)
-}
-
-userInterface.prototype.fillYear = () => {
-    const maxYear = new Date().getFullYear()
-    minYear = maxYear - 20
+//Llena las opciones de los años
+UI.prototype.llenarOpciones = () => {
+    const max = new Date().getFullYear()
+    min = max - 22
 
     const selectYear = document.querySelector("#year")
 
-    for (let i = maxYear; i > minYear; i--) {
+    for (let i = max; i >= min; i--) {
         let option = document.createElement("option")
         option.value = i
         option.textContent = i
@@ -104,43 +70,78 @@ userInterface.prototype.fillYear = () => {
     }
 }
 
-//Instance of userInterface
-const ui = new userInterface()
+//Muestra alertas en pantalla
+UI.prototype.mostrarMensaje = (mensaje, tipo) => {
+
+    const div = document.createElement("div")
+
+    if(tipo === "error") {
+        div.classList.add("error")
+    } else {
+        div.classList.add("correcto")
+    }
+
+    div.classList.add("mensaje", "mt-10")
+    div.textContent = mensaje
+
+    //Insertar en el HTML
+    const formulario = document.querySelector("#cotizar-seguro")
+    formulario.insertBefore(div, document.querySelector("#resultado"))
+
+    setTimeout(() => {
+        div.remove()
+    }, 3000)
+}
+
+UI.prototype.mostrarResultado = (seguro, total) => {
+
+    //Crear el resultado
+    const div = document.createElement("div")
+    div.classList.add("mt-10")
+
+    div.innerHTML = `
+        <p class="header">Tu resumen</p>
+        <p class="font-bold">Total: ${total}</p>
+    `
+    const resultadoDiv = document.querySelector("#resultado")
+    resultadoDiv.appendChild(div)
+}
+
+//Instancia UI
+const ui = new UI()
 
 document.addEventListener("DOMContentLoaded", () => {
-    ui.fillYear() //Fill the select with the years
+    ui.llenarOpciones() //Llena las opciones con los años
 })
 
 eventListeners()
 
 function eventListeners() {
-    const form = document.querySelector("#cotizar-seguro")
-    form.addEventListener("submit", quoteInsurance)
+    const formulario = document.querySelector("#cotizar-seguro")
+    formulario.addEventListener("submit", cotizarSeguro)
 }
 
-function quoteInsurance(e) {
+function cotizarSeguro(e) {
     e.preventDefault()
 
-    //Read the selected brand
-    const marca = document.querySelector("#marca").value
-    //Read selected year
+    //Leer la marca seleccionada
+    const marca = document.querySelector("#marca").value    
+    
+    //Leer el año seleccionado
     const year = document.querySelector("#year").value
-    //Read the type of insurance
-    const type = document.querySelector('input[name="tipo"]:checked').value
-
-    if (marca === "" || year === "" || type === "") {
-        ui.showMessage("You have to fill all fields", "error")
-        return;
+    
+    //Leer el tipo seleccionado
+    const tipo = document.querySelector('input[name ="tipo"]:checked').value
+    
+    if(marca === "" || year === "" || tipo === "") {
+        ui.mostrarMensaje("Debes de rellenar todos los campos", "error")
+    } else {
+        ui.mostrarMensaje("Cotizando.....", "correcto")
     }
-    
-    ui.showMessage("Calculating..!!", "correcto")
-    
-    //To instance the insurance
-    const insurance = new Insurance(marca, year, type)
-    
-    const total = insurance.quoteInsurance()
-    
-    //Use the prototype to quote
-    ui.showResult(insurance, total)
-    
+
+    //Instanciando el seguro
+    const seguro = new Seguro(marca, year, tipo)
+    const total = seguro.cotizarSeguro()
+    //Utilizar el prototype que va a cotizar
+    ui.mostrarResultado(seguro, total)
 }
